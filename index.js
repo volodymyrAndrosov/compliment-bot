@@ -108,8 +108,10 @@ async function startPolling() {
   }
 }
 
-// Щодня о 9:00 за Києвом (06:00 UTC)
-cron.schedule('0 6 * * *', sendDailyCompliment);
+cron.schedule('0 6 * * 1-5', sendDailyCompliment); // 9:00 будні
+cron.schedule('0 18 * * 1-5', sendDailyCompliment); // 21:00 будні
+cron.schedule('0 7 * * 0,6', sendDailyCompliment); // 10:00 вихідні
+cron.schedule('0 18 * * 0,6', sendDailyCompliment); // 21:00 вихідні
 
 startPolling();
 console.log('Бот запущено ✓');
