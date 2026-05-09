@@ -2,6 +2,8 @@ const cron = require('node-cron');
 const fetch = require('node-fetch');
 const { google } = require('googleapis');
 const fs = require('fs');
+const http = require('http');
+http.createServer((req, res) => res.end('OK')).listen(process.env.PORT || 3000);
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const CHAT_ID_HER = process.env.CHAT_ID_HER;
@@ -99,6 +101,11 @@ async function startPolling() {
         const text = update.message?.text;
         if (chatId === CHAT_ID_HER && text) {
           await sendMessage(CHAT_ID_ME, `📨 Вона написала:\n"${text}"`);
+        }
+
+        if (chatId === CHAT_ID_ME && text === '/send') {
+          await sendMessage(CHAT_ID_ME, '⏳ Генерую комплімент...');
+          await sendDailyCompliment();
         }
       }
     } catch (e) {
