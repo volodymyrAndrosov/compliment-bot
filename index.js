@@ -86,7 +86,6 @@ async function sendDailyCompliment() {
   console.log('Надіслано:', compliment);
 }
 
-// Пересилаємо її повідомлення тобі
 async function startPolling() {
   let offset = 0;
   while (true) {
@@ -95,6 +94,11 @@ async function startPolling() {
         `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${offset}&timeout=30`
       );
       const data = await res.json();
+      if (!data.ok) {
+        console.error('Telegram error:', JSON.stringify(data));
+        await new Promise((r) => setTimeout(r, 5000));
+        continue;
+      }
       for (const update of data.result) {
         offset = update.update_id + 1;
         const chatId = update.message?.chat?.id?.toString();
@@ -102,7 +106,6 @@ async function startPolling() {
         if (chatId === CHAT_ID_HER && text) {
           await sendMessage(CHAT_ID_ME, `📨 Вона написала:\n"${text}"`);
         }
-
         if (chatId === CHAT_ID_ME && text === '/send') {
           await sendMessage(CHAT_ID_ME, '⏳ Генерую комплімент...');
           await sendDailyCompliment();
